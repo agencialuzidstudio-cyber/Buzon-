@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buzón de Sugerencias – Pedagogía Cultural</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  /* ============================
+     CSS VARIABLES & RESET
+  ============================ */
+  :root {
+    --navy:      #0d2b6b;
+    --royal:     #1a4db8;
+    --sky:       #3a7bd5;
+    --gold:      #c8a84b;
+    --gold-lt:   #e8d07a;
+    --cream:     #f5f0e8;
+    --white:     #ffffff;
+    --text:      #1a2340;
+    --muted:     #5a6a8a;
+    --card-bg:   rgba(255,255,255,0.92);
+    --shadow:    0 8px 40px rgba(13,43,107,0.12);
+    --shadow-sm: 0 2px 12px rgba(13,43,107,0.08);
+    --radius:    16px;
+    --radius-sm: 10px;
+    --transition: 0.3s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* DARK MODE — tema oscuro profundo con buen contraste */
+  body.dark {
+    --cream:     #0e1117;
+    --white:     #1a1f2e;
+    --text:      #e8eaf6;
+    --muted:     #9fa8c9;
+    --card-bg:   rgba(26,31,46,0.98);
+    --shadow:    0 8px 40px rgba(0,0,0,0.55);
+    --shadow-sm: 0 2px 12px rgba(0,0,0,0.4);
+    --navy:      #4a7fd4;
+    --royal:     #5b8fe8;
+    --gold:      #f0c060;
+    --gold-lt:   #f5d580;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background var(--transition), color var(--transition);
+    overflow-x: hidden;
+  }
+
+  /* ============================
+     BACKGROUND DECORATION
+  ============================ */
+  .bg-blobs {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.18;
+  }
+  .blob-1 { width: 600px; height: 600px; background: var(--royal); top: -200px; left: -150px; }
+  .blob-2 { width: 400px; height: 400px; background: var(--gold);  bottom: -100px; right: -100px; }
+  .blob-3 { width: 300px; height: 300px; background: var(--sky);   top: 50%; left: 60%; }
+
+  /* ============================
+     HEADER
+  ============================ */
+  header {
+    position: relative; z-index: 10;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--royal) 60%, var(--sky) 100%);
+    padding: 2rem 1.5rem 3.5rem;
+    text-align: center;
+    clip-path: ellipse(110% 100% at 50% 0%);
+    box-shadow: 0 4px 32px rgba(13,43,107,0.3);
+  }
+
+  .header-inner {
+    max-width: 800px; margin: 0 auto;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  /* LOGO ZONE — swap logo.png for your image */
+  .logo-wrapper {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: 0 0 0 4px var(--gold), 0 8px 24px rgba(0,0,0,0.25);
+    margin-bottom: 1.2rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform var(--transition);
+  }
+  .logo-wrapper:hover { transform: scale(1.06); }
+  .logo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Fallback placeholder when no logo */
+  .logo-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    color: var(--navy); font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.5px; text-align: center; padding: 10px;
+  }
+  .logo-placeholder i { font-size: 2rem; color: var(--gold); }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 0.6rem;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  header h1 span { color: var(--gold-lt); }
+
+  header p {
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+    max-width: 520px; margin: 0 auto;
+  }
+
+  /* Stats strip */
+  .stats-strip {
+    display: flex; justify-content: center; gap: 2rem;
+    margin-top: 1.6rem; flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(8px);
+    border-radius: 50px;
+    padding: 0.45rem 1.2rem;
+    color: var(--white);
+    font-size: 0.88rem;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .stat-pill i { color: var(--gold-lt); font-size: 0.9rem; }
+
+  /* ============================
+     NAV TOOLBAR
+  ============================ */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: flex-end; gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(13,43,107,0.08);
+    transition: background var(--transition);
+  }
+  body.dark .toolbar {
+    background: rgba(14,17,23,0.92);
+    border-bottom-color: rgba(255,255,255,0.05);
+  }
+  body.dark .blob { opacity: 0.06; }
+
+  .toolbar-btn {
+    display: flex; align-items: center; gap: 0.45rem;
+    border: none; cursor: pointer; border-radius: 50px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+    padding: 0.5rem 1.1rem; transition: all var(--transition);
+  }
+  .btn-admin {
+    background: linear-gradient(135deg, var(--navy), var(--royal));
+    color: var(--white);
+    box-shadow: 0 2px 10px rgba(13,43,107,0.25);
+  }
+  .btn-admin:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13,43,107,0.35); }
+
+  .btn-dark {
+    background: transparent;
+    border: 1.5px solid var(--muted);
+    color: var(--muted);
+  }
+  .btn-dark:hover { border-color: var(--royal); color: var(--royal); }
+  body.dark .btn-dark { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); }
+  body.dark .btn-dark:hover { border-color: var(--gold-lt); color: var(--gold-lt); }
+
+  /* ============================
+     MAIN LAYOUT
+  ============================ */
+  main {
+    position: relative; z-index: 5;
+    max-width: 760px; margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+
+  /* ============================
+     CARD BASE
+  ============================ */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.6);
+    overflow: hidden;
+    animation: fadeUp 0.7s ease both;
+  }
+  body.dark .card {
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, var(--navy) 0%, var(--royal) 100%);
+    padding: 1.1rem 1.6rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .card-header i { color: var(--gold-lt); font-size: 1.2rem; }
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--white); font-size: 1.2rem;
+  }
+
+  .card-body { padding: 1.8rem; }
+
+  /* ============================
+     FORM STYLES
+  ============================ */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+  }
+  @media(max-width:560px){ .form-grid { grid-template-columns: 1fr; } }
+  .form-grid .full { grid-column: 1/-1; }
+
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .field label {
+    font-size: 0.82rem; font-weight: 600;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px;
+  }
+  .field label span { color: #e05b5b; }
+
+  .field input,
+  .field select,
+  .field textarea {
+    background: var(--cream);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 0.72rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: all var(--transition);
+    outline: none;
+    width: 100%;
+  }
+  body.dark .field input,
+  body.dark .field select,
+  body.dark .field textarea {
+    background: #252b3d;
+    color: #e8eaf6;
+    border-color: rgba(100,130,200,0.2);
+  }
+  body.dark .field input::placeholder,
+  body.dark .field textarea::placeholder { color: #6b7a9d; }
+  body.dark .field select option { background: #252b3d; color: #e8eaf6; }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--royal);
+    box-shadow: 0 0 0 4px rgba(26,77,184,0.12);
+  }
+  .field textarea { resize: vertical; min-height: 130px; }
+  .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6a8a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
+
+  /* Category pills */
+  .category-group {
+    display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.2rem;
+  }
+  .cat-pill {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 50px;
+    border: 2px solid rgba(13,43,107,0.15);
+    background: var(--cream);
+    font-size: 0.88rem; font-weight: 500; color: var(--muted);
+    cursor: pointer; transition: all var(--transition);
+    user-select: none;
+  }
+  body.dark .cat-pill { background: #252b3d; border-color: rgba(100,130,200,0.25); color: #9fa8c9; }
+  .cat-pill input { display: none; }
+  .cat-pill:has(input:checked),
+  .cat-pill.selected {
+    background: linear-gradient(135deg, var(--navy), var(--royal));
+    border-color: var(--royal); color: var(--white);
+    box-shadow: 0 4px 14px rgba(13,43,107,0.3);
+  }
+  .cat-pill i { font-size: 0.9rem; }
+
+  /* Submit button */
+  .btn-submit {
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    width: 100%; padding: 0.9rem;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--royal) 50%, var(--sky) 100%);
+    color: var(--white); border: none; border-radius: var(--radius-sm);
+    font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700;
+    cursor: pointer; transition: all var(--transition);
+    box-shadow: 0 4px 20px rgba(13,43,107,0.3);
+    letter-spacing: 0.5px;
+    margin-top: 0.6rem;
+  }
+  .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(13,43,107,0.4); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* ============================
+     SUCCESS / ERROR ALERTS
+  ============================ */
+  .alert {
+    display: none; align-items: center; gap: 1rem;
+    padding: 1rem 1.3rem;
+    border-radius: var(--radius-sm);
+    font-weight: 500; font-size: 0.95rem;
+    margin-top: 1rem;
+    animation: fadeUp 0.4s ease both;
+  }
+  .alert.show { display: flex; }
+  .alert-success {
+    background: linear-gradient(90deg, #e8f5e9, #f0fff4);
+    border-left: 4px solid #2e7d32;
+    color: #1b5e20;
+  }
+  .alert-error {
+    background: linear-gradient(90deg, #fce4ec, #fff5f5);
+    border-left: 4px solid #c62828;
+    color: #b71c1c;
+  }
+  .alert i { font-size: 1.4rem; flex-shrink: 0; }
+
+  /* ============================
+     ADMIN PANEL
+  ============================ */
+  .admin-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(5,15,40,0.75);
+    backdrop-filter: blur(6px);
+    align-items: flex-start; justify-content: center;
+    padding: 2rem 1rem;
+    overflow-y: auto;
+  }
+  .admin-overlay.open { display: flex; animation: fadeIn 0.3s ease; }
+
+  .admin-panel {
+    width: 100%; max-width: 900px;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.4);
+    overflow: hidden;
+    animation: slideUp 0.4s ease both;
+  }
+  body.dark .admin-panel { background: #13182a; }
+
+  .admin-header {
+    background: linear-gradient(135deg, var(--navy), var(--royal));
+    padding: 1.4rem 1.8rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .admin-header h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--white); font-size: 1.3rem;
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+  .admin-header h2 i { color: var(--gold-lt); }
+
+  .btn-close {
+    background: rgba(255,255,255,0.15); border: none;
+    color: var(--white); border-radius: 50%;
+    width: 36px; height: 36px; cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background var(--transition);
+  }
+  .btn-close:hover { background: rgba(255,255,255,0.28); }
+
+  .admin-body { padding: 1.8rem; }
+
+  /* Password gate */
+  .password-gate { text-align: center; padding: 2rem 1rem; }
+  .lock-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--navy), var(--sky));
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.2rem;
+    box-shadow: 0 6px 24px rgba(13,43,107,0.3);
+  }
+  .lock-icon i { font-size: 1.8rem; color: var(--gold-lt); }
+
+  .password-gate h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; color: var(--text); margin-bottom: 0.4rem;
+  }
+  .password-gate p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+  .pwd-field {
+    position: relative; max-width: 320px; margin: 0 auto 1rem;
+  }
+  .pwd-field input {
+    width: 100%; padding: 0.8rem 3rem 0.8rem 1.1rem;
+    border: 2px solid rgba(13,43,107,0.15);
+    border-radius: var(--radius-sm);
+    font-size: 1.1rem; letter-spacing: 0.2em; text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream); color: var(--text);
+    outline: none; transition: border-color var(--transition);
+  }
+  body.dark .pwd-field input { background: #252b3d; color: #e8eaf6; border-color: rgba(100,130,200,0.2); }
+  .pwd-field input:focus { border-color: var(--royal); }
+  .pwd-toggle {
+    position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem;
+  }
+
+  .btn-unlock {
+    padding: 0.75rem 2.5rem;
+    background: linear-gradient(135deg, var(--navy), var(--royal));
+    color: var(--white); border: none; border-radius: 50px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: all var(--transition);
+    box-shadow: 0 4px 16px rgba(13,43,107,0.3);
+  }
+  .btn-unlock:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,43,107,0.4); }
+
+  /* Dashboard */
+  .dashboard { display: none; }
+  .dashboard.open { display: block; }
+
+  .dash-controls {
+    display: flex; flex-wrap: wrap; gap: 0.75rem;
+    margin-bottom: 1.4rem; align-items: center;
+  }
+  .search-box {
+    flex: 1 1 200px; position: relative;
+  }
+  .search-box input {
+    width: 100%; padding: 0.65rem 1rem 0.65rem 2.5rem;
+    border: 2px solid rgba(13,43,107,0.12);
+    border-radius: 50px; font-size: 0.9rem; font-family: 'DM Sans', sans-serif;
+    background: var(--cream); color: var(--text); outline: none;
+    transition: border-color var(--transition);
+  }
+  body.dark .search-box input { background: #252b3d; color: #e8eaf6; border-color: rgba(100,130,200,0.2); }
+  body.dark .search-box input::placeholder { color: #6b7a9d; }
+  .search-box input:focus { border-color: var(--royal); }
+  .search-box i {
+    position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 0.9rem;
+  }
+  .filter-select {
+    padding: 0.65rem 1.1rem;
+    border: 2px solid rgba(13,43,107,0.12);
+    border-radius: 50px; font-size: 0.88rem; font-family: 'DM Sans', sans-serif;
+    background: var(--cream); color: var(--text); outline: none;
+    cursor: pointer; transition: border-color var(--transition);
+  }
+  body.dark .filter-select { background: #252b3d; color: #e8eaf6; border-color: rgba(100,130,200,0.2); }
+  .filter-select:focus { border-color: var(--royal); }
+
+  .dash-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;
+  }
+  .count-badge {
+    background: linear-gradient(135deg, var(--navy), var(--royal));
+    color: var(--white); border-radius: 50px;
+    padding: 0.3rem 1rem; font-size: 0.82rem; font-weight: 600;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .count-badge i { font-size: 0.8rem; }
+
+  .btn-clear-all {
+    background: none; border: 1.5px solid #e05b5b;
+    color: #e05b5b; border-radius: 50px;
+    padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; transition: all var(--transition);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-clear-all:hover { background: #e05b5b; color: var(--white); }
+
+  /* Suggestion cards */
+  .suggestions-list {
+    display: grid; gap: 1rem;
+  }
+
+  .sug-card {
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(13,43,107,0.08);
+    padding: 1.2rem;
+    transition: transform var(--transition), box-shadow var(--transition);
+    animation: fadeUp 0.4s ease both;
+  }
+  body.dark .sug-card { background: #1e2436; border-color: rgba(100,130,200,0.15); }
+  .sug-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+
+  .sug-card-top {
+    display: flex; flex-wrap: wrap;
+    align-items: center; gap: 0.6rem; margin-bottom: 0.8rem;
+  }
+  .sug-name {
+    font-weight: 700; font-size: 1rem; color: var(--navy); flex: 1;
+  }
+  body.dark .sug-name { color: #a0bfff; }
+
+  .badge {
+    font-size: 0.72rem; font-weight: 600; border-radius: 50px;
+    padding: 0.22rem 0.7rem; letter-spacing: 0.4px;
+  }
+  .badge-grade { background: rgba(13,43,107,0.1); color: var(--navy); }
+  .badge-cat   { background: linear-gradient(135deg, var(--gold), var(--gold-lt)); color: #4a3000; }
+  body.dark .badge-grade { background: rgba(160,191,255,0.15); color: #a0bfff; }
+
+  .sug-text {
+    font-size: 0.92rem; color: var(--text); line-height: 1.6;
+    background: var(--white); border-radius: 8px;
+    padding: 0.7rem 0.9rem; margin-bottom: 0.7rem;
+  }
+  body.dark .sug-text { background: #252b3d; color: #e8eaf6; }
+
+  .sug-footer {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.78rem; color: var(--muted);
+  }
+  .sug-footer i { font-size: 0.75rem; }
+
+  .empty-state {
+    text-align: center; padding: 3rem 1rem; color: var(--muted);
+  }
+  .empty-state i { font-size: 3rem; margin-bottom: 0.8rem; display: block; opacity: 0.4; }
+  .empty-state p { font-size: 0.95rem; }
+
+  /* ============================
+     FOOTER
+  ============================ */
+  footer {
+    position: relative; z-index: 5;
+    text-align: center; padding: 1.5rem;
+    font-size: 0.78rem; color: var(--muted);
+    border-top: 1px solid rgba(13,43,107,0.08);
+  }
+  footer span { color: var(--gold); }
+
+  /* ============================
+     ANIMATIONS
+  ============================ */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============================
+     RESPONSIVE TWEAKS
+  ============================ */
+  @media(max-width:480px) {
+    .card-body { padding: 1.2rem; }
+    .admin-body { padding: 1.2rem; }
+    .dash-controls { flex-direction: column; }
+    .search-box { min-width: 100%; }
+    header { padding: 1.5rem 1rem 3rem; }
+  }
+
+  /* PERSONERÍA BADGE */
+  .personeria-badge {
+    position: fixed; top: 0; left: 0; z-index: 300;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--royal) 100%);
+    color: var(--white);
+    padding: 0.55rem 1.4rem 0.55rem 1rem;
+    border-bottom-right-radius: 18px;
+    box-shadow: 0 4px 20px rgba(13,43,107,0.35);
+    display: flex; flex-direction: column;
+    line-height: 1.25;
+    border-top: 3px solid var(--gold);
+  }
+  .personeria-badge .pb-title {
+    font-size: 0.62rem; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--gold-lt); opacity: 0.9;
+  }
+  .personeria-badge .pb-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.88rem; font-weight: 700; color: var(--white);
+  }
+  .personeria-badge .pb-sub {
+    font-size: 0.68rem; color: rgba(255,255,255,0.65); letter-spacing: 0.3px;
+  }
+
+</style>
+</head>
+<body>
+
+
+<!-- PERSONERÍA BADGE (esquina superior izquierda) -->
+<div class="personeria-badge">
+  <span class="pb-title">Personería Estudiantil</span>
+  <span class="pb-name">Alejandro Casallas</span>
+  <span class="pb-sub">Colegio Gimnasio Cervantes</span>
+</div>
+
+<!-- Background blobs -->
+<div class="bg-blobs" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- ============================
+     HEADER
+============================ -->
+<header>
+  <div class="header-inner">
+
+    <!-- LOGO — reemplaza "logo.png" con la ruta de tu imagen -->
+    <div class="logo-wrapper" id="logoWrapper" title="Logo del colegio">
+      <img src="data:image/jpeg;base64,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" alt="Colegio Gimnasio Cervantes" id="logoImg">
+    </div>
+
+    <h1>Buzón de <span>Sugerencias</span><br>Estudiantiles</h1>
+    <p>Tu voz importa. Comparte tus ideas y ayuda a construir una mejor institución.</p>
+
+    <div class="stats-strip">
+      <div class="stat-pill"><i class="fas fa-inbox"></i> <span id="headerCount">0</span> sugerencias recibidas</div>
+      <div class="stat-pill"><i class="fas fa-calendar-day"></i> <span id="headerDate"></span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================
+     TOOLBAR
+============================ -->
+<div class="toolbar">
+  <button class="toolbar-btn btn-dark" id="darkToggle" aria-label="Modo oscuro">
+    <i class="fas fa-moon" id="darkIcon"></i> <span id="darkLabel">Modo oscuro</span>
+  </button>
+  <button class="toolbar-btn btn-admin" id="openAdmin">
+    <i class="fas fa-lock"></i> Ver sugerencias
+  </button>
+</div>
+
+<!-- ============================
+     MAIN — FORM
+============================ -->
+<main>
+  <div class="card" style="animation-delay:0.1s">
+    <div class="card-header">
+      <i class="fas fa-pen-to-square"></i>
+      <h2>Nueva Sugerencia</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-grid" id="suggestionForm">
+
+        <!-- Nombre -->
+        <div class="field">
+          <label>Código del estudiante <span>*</span></label>
+          <input type="text" id="nombre" placeholder="Ej: 2024-0312" required>
+        </div>
+
+        <!-- Grado -->
+        <div class="field">
+          <label>Grado <span>*</span></label>
+          <select id="grado" required>
+            <option value="">— Selecciona tu grado —</option>
+            <option>Primero</option>
+            <option>Segundo</option>
+            <option>Tercero</option>
+            <option>Cuarto</option>
+            <option>Quinto</option>
+            <option>Sexto</option>
+            <option>Séptimo</option>
+            <option>Octavo</option>
+            <option>Noveno</option>
+            <option>Décimo</option>
+            <option>Once</option>
+          </select>
+        </div>
+
+        <!-- Categoría -->
+        <div class="field full">
+          <label>Categoría <span>*</span></label>
+          <div class="category-group" id="categoryGroup">
+            <label class="cat-pill" data-cat="Personería">
+              <input type="radio" name="categoria" value="Personería">
+              <i class="fas fa-balance-scale"></i> Personería
+            </label>
+            <label class="cat-pill" data-cat="Consejo Estudiantil">
+              <input type="radio" name="categoria" value="Consejo Estudiantil">
+              <i class="fas fa-users"></i> Consejo Estudiantil
+            </label>
+            <label class="cat-pill" data-cat="Sugerencias Varias">
+              <input type="radio" name="categoria" value="Sugerencias Varias">
+              <i class="fas fa-school"></i> Sugerencias Varias
+            </label>
+          </div>
+        </div>
+
+        <!-- Sugerencia -->
+        <div class="field full">
+          <label>Tu sugerencia <span>*</span></label>
+          <textarea id="sugerencia" placeholder="Describe tu sugerencia con claridad y respeto..."></textarea>
+        </div>
+
+        <!-- Submit -->
+        <div class="field full">
+          <button class="btn-submit" id="submitBtn" type="button">
+            <i class="fas fa-paper-plane"></i> Enviar sugerencia
+          </button>
+        </div>
+
+        <!-- Alerts -->
+        <div class="field full">
+          <div class="alert alert-success" id="alertSuccess">
+            <i class="fas fa-circle-check"></i>
+            <div>
+              <strong>¡Sugerencia enviada!</strong><br>
+              <span>Tu mensaje fue guardado correctamente. ¡Gracias por participar!</span>
+            </div>
+          </div>
+          <div class="alert alert-error" id="alertError">
+            <i class="fas fa-circle-exclamation"></i>
+            <div id="alertErrorMsg">Por favor completa todos los campos requeridos.</div>
+          </div>
+        </div>
+
+      </div><!-- /form-grid -->
+    </div><!-- /card-body -->
+  </div><!-- /card -->
+</main>
+
+<!-- ============================
+     FOOTER
+============================ -->
+<footer>
+  <p>© 2025 <span>Colegio Gimnasio Cervantes</span> — Sabiduría · Superación</p>
+</footer>
+
+<!-- ============================
+     ADMIN OVERLAY
+============================ -->
+<div class="admin-overlay" id="adminOverlay" role="dialog" aria-modal="true">
+  <div class="admin-panel">
+
+    <div class="admin-header">
+      <h2><i class="fas fa-shield-halved"></i> Panel de Administración</h2>
+      <button class="btn-close" id="closeAdmin" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
+    </div>
+
+    <div class="admin-body">
+
+      <!-- Password gate -->
+      <div class="password-gate" id="passwordGate">
+        <div class="lock-icon"><i class="fas fa-lock"></i></div>
+        <h3>Acceso restringido</h3>
+        <p>Ingresa la contraseña para ver las sugerencias</p>
+        <div class="pwd-field">
+          <input type="password" id="pwdInput" placeholder="••••" maxlength="8"
+                 onkeydown="if(event.key==='Enter') checkPassword()">
+          <button class="pwd-toggle" id="pwdToggle" type="button" aria-label="Mostrar contraseña">
+            <i class="fas fa-eye" id="eyeIcon"></i>
+          </button>
+        </div>
+        <br>
+        <button class="btn-unlock" onclick="checkPassword()">
+          <i class="fas fa-unlock-alt"></i> Ingresar
+        </button>
+        <div class="alert alert-error" id="alertWrong" style="max-width:320px;margin:1rem auto 0">
+          <i class="fas fa-circle-exclamation"></i>
+          <span>Contraseña incorrecta. Acceso denegado.</span>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div class="dashboard" id="dashboard">
+
+        <div class="dash-controls">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Buscar sugerencia, nombre..." oninput="applyFilters()">
+          </div>
+          <select class="filter-select" id="filterCat" onchange="applyFilters()">
+            <option value="">Todas las categorías</option>
+            <option>Personería</option>
+            <option>Consejo Estudiantil</option>
+            <option>Sugerencias Varias</option>
+          </select>
+          <select class="filter-select" id="filterGrado" onchange="applyFilters()">
+            <option value="">Todos los grados</option>
+            <option>Primero</option><option>Segundo</option><option>Tercero</option>
+            <option>Cuarto</option><option>Quinto</option><option>Sexto</option>
+            <option>Séptimo</option><option>Octavo</option><option>Noveno</option>
+            <option>Décimo</option><option>Once</option>
+          </select>
+        </div>
+
+        <div class="dash-meta">
+          <div class="count-badge"><i class="fas fa-inbox"></i> <span id="dashCount">0</span> sugerencias</div>
+          <button class="btn-clear-all" onclick="clearAll()"><i class="fas fa-trash"></i> Limpiar todo</button>
+        </div>
+
+        <div class="suggestions-list" id="suggestionsList"></div>
+
+      </div><!-- /dashboard -->
+
+    </div><!-- /admin-body -->
+  </div><!-- /admin-panel -->
+</div><!-- /admin-overlay -->
+
+<!-- ============================
+     JAVASCRIPT
+============================ -->
+<script>
+  /* ----------------------------------------
+     STORAGE KEY & PASSWORD
+  ---------------------------------------- */
+  const STORAGE_KEY = 'pedagogia_sugerencias';
+  const ADMIN_PWD   = '3107';
+
+  /* ----------------------------------------
+     HELPERS
+  ---------------------------------------- */
+  function getSugerencias() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function saveSugerencias(arr) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' })
+      + ' · ' + d.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  async function updateHeaderCount() {
+    try {
+      const res  = await fetch(SHEETS_URL + '?t=' + Date.now());
+      const json = await res.json();
+      if (json.result === 'ok') {
+        document.getElementById('headerCount').textContent = json.data ? json.data.length : 0;
+      }
+    } catch(err) {
+      // fallback a localStorage
+      document.getElementById('headerCount').textContent = getSugerencias().length;
+    }
+  }
+
+  /* ----------------------------------------
+     HEADER DATE
+  ---------------------------------------- */
+  (function setDate() {
+    const d = new Date();
+    document.getElementById('headerDate').textContent =
+      d.toLocaleDateString('es-CO', { weekday:'long', day:'numeric', month:'long' });
+  })();
+
+  /* ----------------------------------------
+     CATEGORY PILLS (visual feedback for radio)
+  ---------------------------------------- */
+  document.querySelectorAll('.cat-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+    });
+  });
+
+  /* ----------------------------------------
+     SUBMIT FORM
+  ---------------------------------------- */
+  /* ----------------------------------------
+     GOOGLE SHEETS ENDPOINT
+  ---------------------------------------- */
+  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyJoV5FbDe88ucstR8eP1263H8hsP65TLHsESaXgi1uAMRTuRVMd3ZWmeISHXxlWjDM/exec';
+
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    const nombre     = document.getElementById('nombre').value.trim();
+    const grado      = document.getElementById('grado').value;
+    const sugerencia = document.getElementById('sugerencia').value.trim();
+    const catRadio   = document.querySelector('input[name="categoria"]:checked');
+    const categoria  = catRadio ? catRadio.value : '';
+
+    // Hide old alerts
+    document.getElementById('alertSuccess').classList.remove('show');
+    document.getElementById('alertError').classList.remove('show');
+
+    // Validate
+    if (!nombre || !grado || !categoria || !sugerencia) {
+      document.getElementById('alertError').classList.add('show');
+      document.getElementById('alertErrorMsg').textContent =
+        'Por favor completa todos los campos requeridos.';
+      return;
+    }
+
+    // Disable button while sending
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+    // Save locally too
+    const items = getSugerencias();
+    const entry = { id: Date.now(), nombre, grado, categoria, sugerencia, fecha: new Date().toISOString() };
+    items.unshift(entry);
+    saveSugerencias(items);
+    updateHeaderCount();
+
+    // Send to Google Sheets
+    try {
+      await fetch(SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, grado, categoria, sugerencia })
+      });
+    } catch(err) {
+      console.warn('No se pudo enviar a Sheets:', err);
+    }
+
+    // Reset form
+    document.getElementById('nombre').value     = '';
+    document.getElementById('grado').value      = '';
+    document.getElementById('sugerencia').value = '';
+    document.querySelectorAll('.cat-pill').forEach(p => {
+      p.classList.remove('selected');
+      p.querySelector('input').checked = false;
+    });
+
+    // Re-enable button
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar sugerencia';
+
+    // Show success
+    document.getElementById('alertSuccess').classList.add('show');
+    setTimeout(() => document.getElementById('alertSuccess').classList.remove('show'), 5000);
+  });
+
+  /* ----------------------------------------
+     DARK MODE
+  ---------------------------------------- */
+  const darkToggle = document.getElementById('darkToggle');
+  const darkIcon   = document.getElementById('darkIcon');
+  const darkLabel  = document.getElementById('darkLabel');
+
+  if (localStorage.getItem('dark') === '1') applyDark(true);
+
+  darkToggle.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('dark', isDark ? '1' : '0');
+    applyDark(isDark);
+  });
+
+  function applyDark(on) {
+    darkIcon.className  = on ? 'fas fa-sun' : 'fas fa-moon';
+    darkLabel.textContent = on ? 'Modo claro' : 'Modo oscuro';
+  }
+
+  /* ----------------------------------------
+     ADMIN PANEL — OPEN / CLOSE
+  ---------------------------------------- */
+  document.getElementById('openAdmin').addEventListener('click', openAdmin);
+  document.getElementById('closeAdmin').addEventListener('click', closeAdmin);
+  document.getElementById('adminOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('adminOverlay')) closeAdmin();
+  });
+
+  function openAdmin() {
+    document.getElementById('adminOverlay').classList.add('open');
+    // Reset gate
+    document.getElementById('passwordGate').style.display = '';
+    document.getElementById('dashboard').classList.remove('open');
+    document.getElementById('alertWrong').classList.remove('show');
+    document.getElementById('pwdInput').value = '';
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('pwdInput').focus(), 200);
+  }
+
+  function closeAdmin() {
+    document.getElementById('adminOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* Password show/hide */
+  document.getElementById('pwdToggle').addEventListener('click', () => {
+    const inp  = document.getElementById('pwdInput');
+    const icon = document.getElementById('eyeIcon');
+    const show = inp.type === 'password';
+    inp.type    = show ? 'text' : 'password';
+    icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+  });
+
+  /* ----------------------------------------
+     PASSWORD CHECK
+  ---------------------------------------- */
+  function checkPassword() {
+    const val = document.getElementById('pwdInput').value;
+    document.getElementById('alertWrong').classList.remove('show');
+
+    if (val === ADMIN_PWD) {
+      document.getElementById('passwordGate').style.display = 'none';
+      document.getElementById('dashboard').classList.add('open');
+      renderDashboard();
+    } else {
+      document.getElementById('alertWrong').classList.add('show');
+      document.getElementById('pwdInput').value = '';
+      document.getElementById('pwdInput').focus();
+    }
+  }
+
+  /* ----------------------------------------
+     RENDER DASHBOARD — carga desde Google Sheets
+  ---------------------------------------- */
+  let allSheetsData = [];
+
+  async function renderDashboard() {
+    const list = document.getElementById('suggestionsList');
+    list.innerHTML = `<div class="empty-state"><i class="fas fa-spinner fa-spin" style="font-size:2rem;opacity:0.5"></i><p>Cargando sugerencias...</p></div>`;
+
+    try {
+      const res  = await fetch(SHEETS_URL + '?t=' + Date.now());
+      const json = await res.json();
+
+      if (json.result === 'ok') {
+        allSheetsData = json.data || [];
+      } else {
+        allSheetsData = [];
+      }
+    } catch(err) {
+      console.warn('Error cargando Sheets, usando localStorage:', err);
+      allSheetsData = getSugerencias().map(i => ({
+        fecha: new Date(i.fecha).toLocaleString('es-CO'),
+        nombre: i.nombre, grado: i.grado,
+        categoria: i.categoria, sugerencia: i.sugerencia
+      }));
+    }
+
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const search    = (document.getElementById('searchInput').value || '').toLowerCase();
+    const filterCat = document.getElementById('filterCat').value;
+    const filterG   = document.getElementById('filterGrado').value;
+
+    let items = allSheetsData;
+    if (filterCat) items = items.filter(i => i.categoria === filterCat);
+    if (filterG)   items = items.filter(i => i.grado === filterG);
+    if (search)    items = items.filter(i =>
+      (i.nombre     || '').toLowerCase().includes(search) ||
+      (i.sugerencia || '').toLowerCase().includes(search) ||
+      (i.categoria  || '').toLowerCase().includes(search) ||
+      (i.grado      || '').toLowerCase().includes(search)
+    );
+
+    document.getElementById('dashCount').textContent = items.length;
+    const list = document.getElementById('suggestionsList');
+
+    if (items.length === 0) {
+      list.innerHTML = `<div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p>No hay sugerencias que coincidan.</p>
+      </div>`;
+      return;
+    }
+
+    list.innerHTML = items.map((item, idx) => `
+      <div class="sug-card" style="animation-delay:${idx * 0.05}s">
+        <div class="sug-card-top">
+          <div class="sug-name"><i class="fas fa-id-badge" style="font-size:.85rem;margin-right:4px;opacity:.5"></i>${escHtml(item.nombre)}</div>
+          <span class="badge badge-grade">${escHtml(item.grado)}</span>
+          <span class="badge badge-cat">${escHtml(item.categoria)}</span>
+        </div>
+        <div class="sug-text">${escHtml(item.sugerencia)}</div>
+        <div class="sug-footer">
+          <i class="fas fa-clock"></i> ${escHtml(String(item.fecha))}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ----------------------------------------
+     CLEAR ALL
+  ---------------------------------------- */
+  function clearAll() {
+    if (!confirm('¿Estás seguro de que deseas eliminar TODAS las sugerencias? Esta acción no se puede deshacer.')) return;
+    saveSugerencias([]);
+    updateHeaderCount();
+    renderDashboard();
+  }
+
+  /* ----------------------------------------
+     ESCAPE HTML
+  ---------------------------------------- */
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  /* ----------------------------------------
+     INIT
+  ---------------------------------------- */
+  updateHeaderCount();
+  // Actualizar contador cada 60 segundos
+  setInterval(updateHeaderCount, 60000);
+</script>
+</body>
+</html>
