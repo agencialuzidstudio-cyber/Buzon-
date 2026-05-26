@@ -28,7 +28,7 @@
     --transition: 0.3s cubic-bezier(.4,0,.2,1);
   }
 
-  /* DARK MODE — tema oscuro profundo con buen contraste */
+  /* TEMA OSCURO ( MODIFICAR POR DIFERENTE CONTRASTE ) */
   body.dark {
     --cream:     #0e1117;
     --white:     #1a1f2e;
@@ -56,7 +56,7 @@
   }
 
   /* ============================
-     BACKGROUND DECORATION
+     DECORACION FONDO
   ============================ */
   .bg-blobs {
     position: fixed; inset: 0; pointer-events: none; z-index: 0;
@@ -71,7 +71,7 @@
   .blob-3 { width: 300px; height: 300px; background: var(--sky);   top: 50%; left: 60%; }
 
   /* ============================
-     HEADER
+     TITULO 
   ============================ */
   header {
     position: relative; z-index: 10;
@@ -87,7 +87,7 @@
     animation: fadeDown 0.8s ease both;
   }
 
-  /* LOGO ZONE — swap logo.png for your image */
+  /* LOGO COLEGIO CERVANTES */
   .logo-wrapper {
     display: inline-flex; align-items: center; justify-content: center;
     width: 110px; height: 110px;
@@ -187,7 +187,7 @@
   body.dark .btn-dark:hover { border-color: var(--gold-lt); color: var(--gold-lt); }
 
   /* ============================
-     MAIN LAYOUT
+     PRINCIPAL
   ============================ */
   main {
     position: relative; z-index: 5;
@@ -196,7 +196,7 @@
   }
 
   /* ============================
-     CARD BASE
+     BASES
   ============================ */
   .card {
     background: var(--card-bg);
@@ -225,7 +225,7 @@
   .card-body { padding: 1.8rem; }
 
   /* ============================
-     FORM STYLES
+     ESTILO FORMILARIO
   ============================ */
   .form-grid {
     display: grid;
@@ -275,7 +275,7 @@
   .field textarea { resize: vertical; min-height: 130px; }
   .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6a8a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
 
-  /* Category pills */
+  /* CATEGORIA "PASTILLAS" */
   .category-group {
     display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.2rem;
   }
@@ -299,7 +299,7 @@
   }
   .cat-pill i { font-size: 0.9rem; }
 
-  /* Submit button */
+  /* BOTON DE ENVIAR */
   .btn-submit {
     display: flex; align-items: center; justify-content: center; gap: 0.6rem;
     width: 100%; padding: 0.9rem;
@@ -315,7 +315,7 @@
   .btn-submit:active { transform: translateY(0); }
 
   /* ============================
-     SUCCESS / ERROR ALERTS
+     ERROR ( FALTA COMPLETAR CAMPOS )
   ============================ */
   .alert {
     display: none; align-items: center; gap: 1rem;
@@ -570,7 +570,7 @@
   }
 
   /* ============================
-     RESPONSIVE TWEAKS
+     AJUSTES DE RESPUESTA
   ============================ */
   @media(max-width:480px) {
     .card-body { padding: 1.2rem; }
@@ -580,7 +580,7 @@
     header { padding: 1.5rem 1rem 3rem; }
   }
 
-  /* PERSONERÍA BADGE */
+  /* PERSONERÍA PANEL */
   .personeria-badge {
     position: fixed; top: 0; left: 0; z-index: 300;
     background: linear-gradient(135deg, var(--navy) 0%, var(--royal) 100%);
@@ -609,14 +609,14 @@
 <body>
 
 
-<!-- PERSONERÍA BADGE (esquina superior izquierda) -->
+<!-- PERSONERÍA PANEL (esquina superior izquierda) -->
 <div class="personeria-badge">
   <span class="pb-title">Personería Estudiantil</span>
   <span class="pb-name">Alejandro Casallas</span>
   <span class="pb-sub">Colegio Gimnasio Cervantes</span>
 </div>
 
-<!-- Background blobs -->
+<!-- FONDO -->
 <div class="bg-blobs" aria-hidden="true">
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
@@ -624,7 +624,7 @@
 </div>
 
 <!-- ============================
-     HEADER
+     ENCABEZAMIENTO
 ============================ -->
 <header>
   <div class="header-inner">
@@ -645,7 +645,7 @@
 </header>
 
 <!-- ============================
-     TOOLBAR
+     BARRA HERTAMIENTAS
 ============================ -->
 <div class="toolbar">
   <button class="toolbar-btn btn-dark" id="darkToggle" aria-label="Modo oscuro">
@@ -657,7 +657,7 @@
 </div>
 
 <!-- ============================
-     MAIN — FORM
+     PRINCIPAL FORM
 ============================ -->
 <main>
   <div class="card" style="animation-delay:0.1s">
@@ -746,14 +746,14 @@
 </main>
 
 <!-- ============================
-     FOOTER
+     PIE DE PAGINA ( MODIFICAR ? )
 ============================ -->
 <footer>
   <p>© 2025 <span>Colegio Gimnasio Cervantes</span> — Sabiduría · Superación</p>
 </footer>
 
 <!-- ============================
-     ADMIN OVERLAY
+     ADMIN 
 ============================ -->
 <div class="admin-overlay" id="adminOverlay" role="dialog" aria-modal="true">
   <div class="admin-panel">
@@ -787,7 +787,7 @@
         </div>
       </div>
 
-      <!-- Dashboard -->
+      <!-- PANEL -->
       <div class="dashboard" id="dashboard">
 
         <div class="dash-controls">
@@ -824,7 +824,7 @@
 </div><!-- /admin-overlay -->
 
 <!-- ============================
-     JAVASCRIPT
+     JAVASCRIPT ( REVISAR )
 ============================ -->
 <script>
   /* ----------------------------------------
@@ -1096,7 +1096,7 @@
   }
 
   /* ----------------------------------------
-     CLEAR ALL
+     LIMPIAR EL PANEL ( MENSAJE )
   ---------------------------------------- */
   function clearAll() {
     if (!confirm('¿Estás seguro de que deseas eliminar TODAS las sugerencias? Esta acción no se puede deshacer.')) return;
@@ -1115,10 +1115,10 @@
   }
 
   /* ----------------------------------------
-     INIT
+     ACTUALIZAR CONTANDOR 
   ---------------------------------------- */
   updateHeaderCount();
-  // Actualizar contador cada 60 segundos
+
   setInterval(updateHeaderCount, 60000);
 </script>
 </body>
